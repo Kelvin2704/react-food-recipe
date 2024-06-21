@@ -3,7 +3,6 @@ import { GiNoodles, GiChopsticks, GiCroissant } from "react-icons/gi";
 import { IoFastFood } from "react-icons/io5";
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
-import { Link } from "react-router-dom";
 
 import React from "react";
 
