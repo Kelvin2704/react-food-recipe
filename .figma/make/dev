@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec env HOST=0.0.0.0 PORT="$PORT" npm start
