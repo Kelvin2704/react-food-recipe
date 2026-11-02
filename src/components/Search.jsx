@@ -1,6 +1,5 @@
-import styled from "styled-components";
 import { useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FiArrowRight, FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 function Search() {
@@ -11,44 +10,28 @@ function Search() {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/searched/" + input);
+    const query = input.trim();
+    if (!query) return;
+    navigate("/searched/" + encodeURIComponent(query));
     setInput("");
   };
   return (
-    <FormStyle onSubmit={handleSubmit}>
-      <div>
-        <FaSearch />
-        <input onChange={handleChange} type="text" value={input} />
+    <form className="search-form" onSubmit={handleSubmit}>
+      <div className="search-field">
+        <FiSearch className="search-icon" />
+        <input
+          aria-label="Search recipes"
+          onChange={handleChange}
+          placeholder="Search recipes, ingredients..."
+          type="search"
+          value={input}
+        />
+        <button className="search-submit" aria-label="Submit search" type="submit">
+          <FiArrowRight />
+        </button>
       </div>
-    </FormStyle>
+    </form>
   );
 }
-
-const FormStyle = styled.form`
-  margin: 2rem 10rem;
-
-  div {
-    position: relative;
-    width: 100%;
-  }
-  input {
-    border: none;
-    background: linear-gradient(35deg, #494949, #313131);
-    font-size: 1.5rem;
-    color: white;
-    padding: 1rem 3rem;
-    border: none;
-    border-radius: 1rem;
-    outline: none;
-    width: 100%;
-  }
-  svg {
-    position: absolute;
-    top: 50%;
-    left: 0%;
-    transform: translate(100%, -50%);
-    color: white;
-  }
-`;
 
 export default Search;

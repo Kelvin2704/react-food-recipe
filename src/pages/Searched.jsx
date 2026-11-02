@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import styled from "styled-components";
+import { useParams } from "react-router-dom";
+import RecipeCard from "../components/RecipeCard";
+import { fallbackRecipes } from "../data/recipes";
 
 function Searched() {
   const params = useParams();
-  const [searchedRecipes, setSearchedRecipes] = useState([]);
+  const [searchedRecipes, setSearchedRecipes] = useState(fallbackRecipes);
   const getSearched = async (name) => {
-    const api = await fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.REACT_APP_API_KEY}&number=20&query=${name}`);
-    const recipes = await api.json();
-    setSearchedRecipes(recipes.results);
+    try {
+      const api = await fetch(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.REACT_APP_API_KEY}&number=20&query=${name}`);
+      if (!api.ok) return;
+      const recipes = await api.json();
+      setSearchedRecipes(recipes.results || []);
+    } catch {
+      setSearchedRecipes(fallbackRecipes);
+    }
   };
 
   useEffect(() => {
@@ -16,64 +22,17 @@ function Searched() {
   }, [params.search]);
 
   return (
-    <Grid>
-      {searchedRecipes.map((item) => {
-        return (
-          <Card key={item.id}>
-            <Link to={"/recipe/" + item.id} />
-            <img src={item.image} alt={item.title} />
-            <h4>{item.title}</h4>
-            <Gradient />
-            <Link />
-          </Card>
-        );
-      })}
-    </Grid>
+    <main className="listing-page">
+      <header className="listing-header">
+        <h1>“{params.search}”</h1>
+        <p>Recipes and ideas matching your search, ready to make your own.</p>
+      </header>
+      <div className="recipe-grid">
+        {searchedRecipes.length ? searchedRecipes.map((item, index) => (
+          <RecipeCard key={item.id} recipe={item} index={index} />
+        )) : <div className="empty-state">No recipes found. Try another ingredient or dish.</div>}
+      </div>
+    </main>
   );
 }
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  grid-gap: 1.5rem;
-`;
-const Card = styled.div`
-  min-height: 12rem;
-  border-radius: 2rem;
-  overflow: hidden;
-  position: relative;
-  img {
-    border-radius: 2rem;
-    position: absolute;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  a {
-    text-direction: none;
-  }
-  h4 {
-    position: absolute;
-    z-index: 10;
-    left: 50%;
-    bottom: 0%;
-    transform: translate(-50%, 0%);
-    color: white;
-    width: 100%;
-    text-align: center;
-    font-weight: 600;
-    font-size: 0.6rem;
-    height: 40%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-`;
-const Gradient = styled.div`
-  z-index: 3;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6));
-`;
 export default Searched;
